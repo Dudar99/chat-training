@@ -1,24 +1,39 @@
 version : '3'
 
 services :
-  chat-service:
-    build: .
-    ports:
-      - "5000:5000"
-  zookeeper:
-    image: zookeeper
-    container_name: zookeeper
-    restart: always
-    hostname: zoo1
-    ports:
-      - 2182:2182
-  kafka:
-    build: .
+#  chat-service:
+#    build: .
+#    container_name : chat-training
+#    ports:
+#      - "8000:8000"
+#  postgres:
+#    image: postgres:10
+#    restart: always
+#    container_name : postgres
+#    environment:
+#      POSTGRES_USER: filter_ez
+#      POSTGRES_PASSWORD: filter_ez
+#      POSTGRES_DATABASE: filter_ez
+#    volumes:
+#      - ./postgres:/var/lib/postgresql/data
+#    ports:
+#      - "5432:5432"
 
-    ports:
-      - "9092"
+  zookeeper :
+    image : confluentinc/cp-zookeeper:latest
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2182
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      ZOOKEEPER_CLIENT_PORT : 2181
+      ZOOKEEPER_TICKTIME : 2000
+  kafka:
+    image:  confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKERID : 1
+      KAFKA_ZOOKEEPER_CONNECT : zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENERS : PLAINTEXT://0.0.0.0:9092
+#      KAFKA_ADVERTISED_HOST_NAME: 'localhost'
+
+
+
