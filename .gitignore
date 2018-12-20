@@ -105,3 +105,7 @@ venv.bak/
 
 #idea
 .idea/
+
+
+#local_settings
+local_config.py

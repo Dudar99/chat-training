@@ -1,39 +1,46 @@
 version : '3'
 
 services :
-#  chat-service:
-#    build: .
-#    container_name : chat-training
-#    ports:
-#      - "8000:8000"
+  chat-service-producer:
+    build: .
+    entrypoint: ["python", "app.py", "producer"]
+    container_name : producer
+    ports:
+      - "8003:8004"
+  chat-service-consumer:
+    build: .
+    entrypoint: ["python", "app.py", "consumer"]
+    container_name: consumer
+    ports:
+      - "8006:8005"
 #  postgres:
 #    image: postgres:10
 #    restart: always
 #    container_name : postgres
 #    environment:
-#      POSTGRES_USER: filter_ez
-#      POSTGRES_PASSWORD: filter_ez
-#      POSTGRES_DATABASE: filter_ez
+#      POSTGRES_USER: chat-service
+#      POSTGRES_PASSWORD: chat-service
+#      POSTGRES_DATABASE: chat-service
 #    volumes:
 #      - ./postgres:/var/lib/postgresql/data
 #    ports:
 #      - "5432:5432"
-
-  zookeeper :
-    image : confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_CLIENT_PORT : 2181
-      ZOOKEEPER_TICKTIME : 2000
-  kafka:
-    image:  confluentinc/cp-kafka:latest
-    depends_on:
-      - zookeeper
-    environment:
-      KAFKA_BROKERID : 1
-      KAFKA_ZOOKEEPER_CONNECT : zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_LISTENERS : PLAINTEXT://0.0.0.0:9092
-#      KAFKA_ADVERTISED_HOST_NAME: 'localhost'
+#
+#  zookeeper :
+#    image : confluentinc/cp-zookeeper:latest
+#    environment:
+#      ZOOKEEPER_CLIENT_PORT : 2181
+#      ZOOKEEPER_TICKTIME : 2000
+#  kafka:
+#    image:  confluentinc/cp-kafka:latest
+#    depends_on:
+#      - zookeeper
+#    environment:
+#      KAFKA_BROKERID : 1
+#      KAFKA_ZOOKEEPER_CONNECT : zookeeper:2181
+#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+#      KAFKA_LISTENERS : PLAINTEXT://0.0.0.0:9092
+##      KAFKA_ADVERTISED_HOST_NAME: 'localhost'
 
 
 

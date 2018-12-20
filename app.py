@@ -1,9 +1,11 @@
-from sanic import Sanic
-from sanic.response import json
+from producer import producer_app
+from consumer import consumer_app
+from sys import argv
 
 
 if __name__ == "__main__":
-    print('Kafka  application START')
-
-    print('Kafka  pplication END')
+    if 'producer' in argv:
+        producer_app.run(port=8001)
+    if 'consumer' in argv:
+        consumer_app.run(port=8003)
 
