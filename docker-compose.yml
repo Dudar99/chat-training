@@ -1,30 +1,58 @@
 version : '3'
 
 services :
-  chat-service-producer:
-    build: .
-    entrypoint: ["python", "app.py", "producer"]
-    container_name : producer
-    ports:
-      - "8003:8004"
-  chat-service-consumer:
-    build: .
-    entrypoint: ["python", "app.py", "consumer"]
-    container_name: consumer
-    ports:
-      - "8006:8005"
-#  postgres:
-#    image: postgres:10
+#  producer:
 #    restart: always
-#    container_name : postgres
-#    environment:
-#      POSTGRES_USER: chat-service
-#      POSTGRES_PASSWORD: chat-service
-#      POSTGRES_DATABASE: chat-service
+#    container_name: app_producer
+#    build:
+#      context: app/producer
+#      dockerfile: Dockerfile
 #    volumes:
-#      - ./postgres:/var/lib/postgresql/data
+#      - ./app:/app
 #    ports:
-#      - "5432:5432"
+#      - 8000:8000
+#    depends_on:
+##      - kafka
+#      - postgres
+##      - zookeeper
+##      - redis
+#    entrypoint: ["python", "/app/run.py", "producer"]
+#  consumer:
+#    restart: always
+#    container_name: app_consumer
+#    build:
+#      context: app/consumer
+#      dockerfile: Dockerfile
+#    volumes:
+#      - ./app:/app
+#    ports:
+#      - 8001:8001
+#    depends_on:
+#      #      - kafka
+#      - postgres
+#    #      - zookeeper
+#    #      - redis
+#    entrypoint: ["python", "/app/run.py", "consumer"]
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    volumes:
+      - /var/lib/postgres
+    environment:
+      POSTGRES_DB: project
+      POSTGRES_USER: project
+      POSTGRES_PASSWORD: project
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis
+    container_name: redis
+    volumes:
+      - ./redis:/var/lib/redis/data
+    ports:
+      - 6379:6379
+
 #
 #  zookeeper :
 #    image : confluentinc/cp-zookeeper:latest
@@ -41,6 +69,5 @@ services :
 #      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
 #      KAFKA_LISTENERS : PLAINTEXT://0.0.0.0:9092
 ##      KAFKA_ADVERTISED_HOST_NAME: 'localhost'
-
 
 

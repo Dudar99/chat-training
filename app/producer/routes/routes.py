@@ -1,6 +1,5 @@
-from producer import producer_app
 from producer.producer import Producer
-from sanic.response import text, json, html, redirect
+from sanic.response import html, redirect
 
 
 async def send_message(request):
