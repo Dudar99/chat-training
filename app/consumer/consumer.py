@@ -5,7 +5,6 @@ from consumer.db_services.postgres_db import PostgresDatabaseManager
 from consumer.db_services.redis_db import RedisManager
 
 
-# To consume latest messages and auto-commit offsets
 class Consumer:
 
     def __init__(self):
@@ -14,34 +13,44 @@ class Consumer:
                                       bootstrap_servers=['localhost:9092'])
         self.counter = 0
 
-    async def listen(self):
+    async def fetch_messages(self):
         for msg in self.consumer:
             self.counter = self.counter + 1
             print(f"topic:{msg.topic} partition: {msg.partition} offset:{msg.offset}"
                   f" key:{msg.key}  value:{msg.value} ")
             print('offset :', msg.offset)
+            await asyncio.sleep(10)
+            await self.write_messages_to_db(topic=msg.topic, msg=msg.value, offset=msg.offset)
 
-            RedisManager.set_data('kafka_offset', f"{msg.offset}")
-            message = Message(msg.topic, msg.value)
-            PostgresDatabaseManager.session_commit(message)
-
-            if self.counter >= 10:
-                self.consumer.commit()
-                self.counter = 0
-                print("Was commited")  # TODO make logger
+    @staticmethod
+    async def write_messages_to_db(topic, msg, offset):
+        RedisManager.set_data('kafka_offset', f"{offset}")
+        message = Message(topic, msg)
+        PostgresDatabaseManager.session_commit(message)
 
     async def commit_per_second(self, second):
         while True:
             await asyncio.sleep(second)
-            self.counter = 0
-            print(self.counter)
             self.consumer.commit()
-            print("Was commited ")
+            self.counter = 0
+            print(f"Was commited per {second}")
 
-    async def commit_per_10_item(self):
+    async def commit_per_item(self, count):
         while True:
-            if self.counter > 10:
+            if self.counter >= count:
                 self.consumer.commit()
                 self.counter = 0
-                print("messages was commited after 10th message appears")
-            await asyncio.sleep(1)
+                print(f"messages was commited after {count} message appears")
+            await asyncio.sleep(0.01)
+
+    @classmethod
+    async def listen_and_commit(self, loop, item, second):
+        try:
+            print('Consumer started')
+            consumer = Consumer()
+            task_commit_per_second = loop.create_task(consumer.commit_per_second(second))
+            task_fetch_messages = loop.create_task(consumer.fetch_messages())
+            task_commit_per_item = loop.create_task(consumer.commit_per_item(item))
+            await asyncio.wait([task_commit_per_item, task_commit_per_second, task_fetch_messages])
+        except Exception as e:
+            print("some problems")

@@ -10,7 +10,7 @@ async def get_messages():
     consumer = Consumer()
     ioloop = asyncio.get_event_loop()
     tasks = [
-        ioloop.create_task(consumer.listen()),
+        ioloop.create_task(consumer.fetch_messages()),
         ioloop.create_task(consumer.commit_per_second(2))
     ]
     ioloop.run_until_complete(asyncio.wait(tasks))
