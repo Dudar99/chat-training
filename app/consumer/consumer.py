@@ -1,17 +1,17 @@
 from kafka import KafkaConsumer
+from kafka.errors import NoBrokersAvailable
 import asyncio
 from consumer.models import Message
 from consumer.db_services.postgres_db import PostgresDatabaseManager
 from consumer.db_services.redis_db import RedisManager
-
+import time
 
 class Consumer:
 
     def __init__(self):
         self.consumer = KafkaConsumer('my-topic',
                                       group_id='my-group',
-                                      bootstrap_servers=['localhost:9092'],
-
+                                      bootstrap_servers=['kafka:9092'],
                                       )
         self.counter = 0
 
@@ -47,12 +47,15 @@ class Consumer:
 
     @classmethod
     async def listen_and_commit(self, loop, item, second):
+
+
+
         try:
-            print('Consumer started')
             consumer = Consumer()
+            print('Consumer started')
             task_commit_per_second = loop.create_task(consumer.commit_per_second(second))
             task_fetch_messages = loop.create_task(consumer.fetch_messages())
             task_commit_per_item = loop.create_task(consumer.commit_per_item(item))
             await asyncio.wait([task_commit_per_item, task_commit_per_second, task_fetch_messages])
         except Exception as e:
-            print("some problems")
+            print("some problems",e)

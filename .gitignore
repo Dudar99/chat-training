@@ -109,3 +109,6 @@ venv.bak/
 
 #local_settings
 local_config.py
+
+#logfiles
+logs/

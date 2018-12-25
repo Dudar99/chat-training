@@ -6,8 +6,13 @@ from consumer.db_services.redis_db import RedisManager
 import asyncio
 
 
-async def get_messages():
-    consumer = Consumer()
+async def get_messages():# DEPRECATED!!!
+    while True:
+        try:
+            consumer = Consumer()
+            break
+        except Exception as e:
+            print(e)
     ioloop = asyncio.get_event_loop()
     tasks = [
         ioloop.create_task(consumer.fetch_messages()),

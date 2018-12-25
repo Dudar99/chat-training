@@ -1,13 +1,14 @@
-from producer import APP as producer
+from producer import APP as producer_app
 from consumer import APP as consumer_app
 import time
 from sys import argv
 import asyncio
 from consumer.consumer import Consumer
+from producer.producer import Producer
 
 if __name__ == '__main__':
     if 'producer' in argv:
-        producer.run(host='127.34.23.31', port=8001)
+        producer_app.run(host='0.0.0.0', port=5000)
     if 'consumer' in argv:
         try:
             loop = asyncio.get_event_loop()
