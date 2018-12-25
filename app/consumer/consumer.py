@@ -10,7 +10,9 @@ class Consumer:
     def __init__(self):
         self.consumer = KafkaConsumer('my-topic',
                                       group_id='my-group',
-                                      bootstrap_servers=['localhost:9092'])
+                                      bootstrap_servers=['localhost:9092'],
+
+                                      )
         self.counter = 0
 
     async def fetch_messages(self):
@@ -19,7 +21,7 @@ class Consumer:
             print(f"topic:{msg.topic} partition: {msg.partition} offset:{msg.offset}"
                   f" key:{msg.key}  value:{msg.value} ")
             print('offset :', msg.offset)
-            await asyncio.sleep(10)
+            await asyncio.sleep(0.1)
             await self.write_messages_to_db(topic=msg.topic, msg=msg.value, offset=msg.offset)
 
     @staticmethod

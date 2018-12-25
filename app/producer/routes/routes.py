@@ -1,8 +1,12 @@
 from producer.producer import Producer
 from sanic.response import html, redirect
 
+import time
+
 
 async def send_message(request):
+
+    print("Connecting to broker")
     producer = Producer()
     message_data = request.form.get('message')
     producer.send_messages('my-topic', message_data)

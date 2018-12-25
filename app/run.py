@@ -7,7 +7,7 @@ from consumer.consumer import Consumer
 
 if __name__ == '__main__':
     if 'producer' in argv:
-        producer.run()
+        producer.run(host='127.34.23.31', port=8001)
     if 'consumer' in argv:
         try:
             loop = asyncio.get_event_loop()
