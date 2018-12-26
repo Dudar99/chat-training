@@ -1,7 +1,6 @@
 import os
 import logging
 from datetime import datetime
-from config import PRODUCER_LOG_FILE_PATH
 from logging.handlers import RotatingFileHandler
 
 def rollover_with_date(self):
@@ -41,7 +40,7 @@ def make_logger(file_path):
 
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-    file_handler = RotatingFileHandler(file_path, mode='a', maxBytes=100000, backupCount=5)
+    file_handler = RotatingFileHandler(file_path, mode='a', maxBytes=100000000, backupCount=5)
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(formatter)
 

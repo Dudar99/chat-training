@@ -1,10 +1,9 @@
-from producer import APP as producer_app
-from consumer import APP as consumer_app
-import time
+from producer.app import APP as producer_app
+from consumer.app import APP as consumer_app
 from sys import argv
 import asyncio
 from consumer.consumer import Consumer
-from producer.producer import Producer
+from consumer.app import LOGGER
 
 if __name__ == '__main__':
     if 'producer' in argv:

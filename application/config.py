@@ -4,7 +4,9 @@ try:
     from local_config import *
 except EnvironmentError:
     pass
+IS_IN_DOCKER = os.environ.get('DOCKER', False)
 
+print(IS_IN_DOCKER)
 BASEDIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 DATABASE = {
     'POSTGRES_USER': LOCAL_POSTGRES_DB_SETTINGS['POSTGRES_USER'],
@@ -20,5 +22,3 @@ REDIS_SETTINGS = {
 CONSUMER_LOG_FILE_PATH = "logs/consumer_log.txt"
 
 PRODUCER_LOG_FILE_PATH = 'logs/producer_log.txt'
-
-print(PRODUCER_LOG_FILE_PATH)

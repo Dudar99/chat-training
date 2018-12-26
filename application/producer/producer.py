@@ -9,7 +9,6 @@ class Producer():
                                       value_serializer=lambda m: json.dumps(m).encode('ascii'), retries=1)
 
     def send_messages(self, topic, *messages):
-        print("starting")
         for message in messages:
             future = self.producer.send(topic, {topic: message})
             try:
