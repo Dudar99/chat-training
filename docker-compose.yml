@@ -1,0 +1,75 @@
+version : '3'
+
+services :
+  producer:
+    restart: always
+    container_name: app_producer
+    build:
+      context: app/producer
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/app
+    ports:
+      - 5000:5000
+    depends_on:
+      - kafka
+      - postgres
+      - zookeeper
+      - redis
+    entrypoint: ["python", "/app/run.py", "producer"]
+#  consumer:
+#    restart: always
+#    container_name: app_consumer
+#    build:
+#      context: app/consumer
+#      dockerfile: Dockerfile
+#    volumes:
+#      - ./app:/app
+#    ports:
+#      - 8001:8001
+#    depends_on:
+#      - kafka
+#      - postgres
+#      - zookeeper
+#      - redis
+#    entrypoint: ["python", "/app/run.py", "consumer"]
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    volumes:
+      - /var/lib/postgres
+    environment:
+      POSTGRES_DB: project
+      POSTGRES_USER: project
+      POSTGRES_PASSWORD: project
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis
+    container_name: redis
+    volumes:
+      - ./redis:/var/lib/redis/data
+    ports:
+      - 6378:6378
+
+
+  zookeeper:
+      image: zookeeper:latest
+      container_name: zookeeper
+      ports:
+        - "2181:2181"
+  kafka:
+    restart: always
+    image: wurstmeister/kafka:0.10.2.0
+    container_name: kafka
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME : kafka
+      KAFKA_ZOOKEEPER_CONNECT : "zookeeper:2181"
+      KAFKA_ADVERTISED_PORT : 9092
+    ports:
+      - "9092:9092"
+    expose:
+      - 9092
+
+
