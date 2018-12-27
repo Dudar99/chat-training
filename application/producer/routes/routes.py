@@ -6,13 +6,12 @@ from producer.app import LOGGER
 
 
 async def send_message(request):
-    print("Connecting to broker")
+    LOGGER.info(f"Try to establish connection with broker")
     while True:
         try:
             producer = Producer()
             break
         except NoBrokersAvailable:
-            print("NO BROKER")
             time.sleep(0.5)
 
     message_data = request.form.get('message')

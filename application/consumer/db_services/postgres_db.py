@@ -1,8 +1,9 @@
 from aiopg.sa import create_engine
 from config import DATABASE
 from consumer.models import models
-from consumer.app import LOGGER
+# from consumer.app import LOGGER
 from consumer.models import Message
+
 
 class PGManager:
 
@@ -23,12 +24,20 @@ class PGManager:
             for model in models:
                 try:
                     await conn.execute(CreateTable(model))
-                    LOGGER.info(f'Table {model.name} was created')
+                    # LOGGER.info(f'Table {model.name} was created')
                 except Exception as e:
-                    LOGGER.info(f'Error occured when creating {model.name}: {e}')
+                    # LOGGER.info(f'Error occured when creating {model.name}: {e}')
+                    continue
 
     @classmethod
     async def insert_into_table(cls, msg):
         engine = await PGManager.create_engine()
         async with engine.acquire() as conn:
             await conn.execute(Message.insert().values(message=msg))
+
+    @classmethod
+    async def table_row_count(cls, table):
+        engine = await PGManager.create_engine()
+        async with engine.acquire() as conn:
+            async with conn.execute(table.select()) as cur:
+                return cur.rowcount

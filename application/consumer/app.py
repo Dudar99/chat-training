@@ -5,6 +5,7 @@ from config import DATABASE, CONSUMER_LOG_FILE_PATH
 import redis
 from config import REDIS_SETTINGS
 from logger_conf import make_logger
+from consumer.db_services import PGManager, RedisManager
 
 APP = Sanic(__name__)
 LOGGER = make_logger(CONSUMER_LOG_FILE_PATH)
@@ -26,6 +27,22 @@ CS_KEY_SPACE = 'chat'
 
 # CASSANDRA_SESSION = CLUSTER.connect()
 
+@APP.listener('before_server_start')
+async def setup(app, loop):
+    try:
+        await PGManager.init_tables()
+        LOGGER.info("PG database was created")
+    except Exception as e:
+        LOGGER.info(e)
+    await RedisManager._init()
+    LOGGER.info("Redis was connected")
+
+
+@APP.listener('after_server_start')
+async def notify_server_started(app, loop):
+    from consumer.consumer import Consumer
+    LOGGER.info(f'Server successfully started!')
+    await Consumer._listen()
 
 
 

@@ -11,10 +11,6 @@ class Consumer:
 
     @classmethod
     async def __init(cls, second_commit, item_commit):
-
-        # await OffsetStorage.ensure_record('offset', value=0)
-        # await OffsetStorage.ensure_record('offset_counter', value=0)
-
         cls.consumer = AIOKafkaConsumer('my-topic',
                                         group_id="chat_1",
                                         bootstrap_servers=["kafka:9092"],
@@ -33,7 +29,6 @@ class Consumer:
                 LOGGER.error("Couldn't connect to Kafka broker because of %s, try again in 3 seconds", e)
                 await asyncio.sleep(3)
 
-        # cls.consumer.seek(*await cls._get_last_offset())
         cls.counter = 0
 
     @classmethod
@@ -46,7 +41,6 @@ class Consumer:
                         f" key:{msg.key}  value:{msg.value} ")
 
             await cls.write_messages_to_db('mt-topic', msg=msg.value, offset=msg.offset)
-
             if cls.counter > 10:
                 await cls.consumer.commit()
                 cls.counter = 0
@@ -54,10 +48,9 @@ class Consumer:
 
     @classmethod
     async def write_messages_to_db(cls , topic, msg, offset):
-        # RedisManager.set_data('kafka_offset', f"{offset}")
-        LOGGER.info("Message object was created")
+        await RedisManager.set_value('kafka', f"{offset}")
+        LOGGER.info(f"offset {offset} was inserted to redis")
         await PGManager.insert_into_table(msg=msg)
-        # PostgresDatabaseManager.session_commit(message)
         LOGGER.info("Message stored to DB")
 
     @classmethod
@@ -69,10 +62,10 @@ class Consumer:
             LOGGER.info(f"commited per {second} second")
 
     @classmethod
-    async def commit_per_item(self, count):
+    async def commit_per_item(cls, count):
         while True:
-            if self.counter >= count:
-                self.consumer.commit()
-                self.counter = 0
+            if cls.counter >= count:
+                cls.consumer.commit()
+                cls.counter = 0
                 LOGGER.info(f"messages was commited after {count} message appears")
             await asyncio.sleep(0.1)
