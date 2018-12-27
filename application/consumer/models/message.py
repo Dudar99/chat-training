@@ -1,25 +1,14 @@
-from sqlalchemy import Column, String, INTEGER
 from sqlalchemy.ext.declarative import declarative_base
-from consumer.app import ENGINE
+import sqlalchemy as sa
+from datetime import datetime
 
 Base = declarative_base()
 
+metadata = sa.MetaData()
 
-class Message(Base):
-    """
-    Table Messages
-    """
-
-    __tablename__ = 'messages'
-
-    id = Column('id', INTEGER, primary_key=True, autoincrement=True)
-    topic = Column('topic', String, nullable=False, unique=False)
-    message = Column('message', String, nullable=False, unique=False)
-
-    def __init__(self, topic, message):
-        self.topic = topic
-        self.message = message
-
-    @classmethod
-    def create_db(cls):
-        Base.metadata.create_all(bind=ENGINE)
+Message = sa.Table('Message', metadata,
+                   sa.Column('id', sa.Integer, autoincrement=True, primary_key=True),
+                   sa.Column('message', sa.String(255)),
+                   sa.Column('created_date', sa.Date, default=datetime.utcnow()))
+models = (Message,)
+__all__ = [models, Message]

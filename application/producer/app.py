@@ -1,11 +1,13 @@
 from sanic import Sanic
 from config import PRODUCER_LOG_FILE_PATH
 from logger_conf import make_logger
+import asyncio
 
 APP = Sanic(__name__)
+LOOP = asyncio.get_event_loop()
 
 LOGGER = make_logger(PRODUCER_LOG_FILE_PATH)
-print("Logger id producer",id(LOGGER))
+
 from producer.routes import add_routes
 
 add_routes(APP)

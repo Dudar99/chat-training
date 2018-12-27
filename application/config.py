@@ -6,7 +6,7 @@ except EnvironmentError:
     pass
 IS_IN_DOCKER = os.environ.get('DOCKER', False)
 
-print(IS_IN_DOCKER)
+
 BASEDIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 DATABASE = {
     'POSTGRES_USER': LOCAL_POSTGRES_DB_SETTINGS['POSTGRES_USER'],

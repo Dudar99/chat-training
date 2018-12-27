@@ -6,7 +6,6 @@ from cassandra.cqlengine.models import Model
 from datetime import datetime
 
 
-
 class Message(Model):
     """
     Cassandra model message
@@ -19,4 +18,3 @@ class Message(Model):
     @classmethod
     def create_db(cls):
         sync_table(Message)
-

@@ -1,3 +1,4 @@
+
 from kafka import KafkaProducer
 import json
 from kafka.errors import KafkaError
@@ -9,6 +10,7 @@ class Producer():
                                       value_serializer=lambda m: json.dumps(m).encode('ascii'), retries=1)
 
     def send_messages(self, topic, *messages):
+        print("starting")
         for message in messages:
             future = self.producer.send(topic, {topic: message})
             try:
@@ -17,4 +19,4 @@ class Producer():
                 # Decide what to do if produce request failed...
                 print(KafkaError.args)
                 pass
-        self.producer.flush()
+            self.producer.flush()

@@ -5,10 +5,10 @@ services :
     restart: always
     container_name: app_producer
     build:
-      context: app/producer
+      context: application/producer
       dockerfile: Dockerfile
     volumes:
-      - ./app:/app
+      - ./application:/application
     ports:
       - 5000:5000
     depends_on:
@@ -16,23 +16,26 @@ services :
       - postgres
       - zookeeper
       - redis
-    entrypoint: ["python", "/app/run.py", "producer"]
-#  consumer:
-#    restart: always
-#    container_name: app_consumer
-#    build:
-#      context: app/consumer
-#      dockerfile: Dockerfile
-#    volumes:
-#      - ./app:/app
-#    ports:
-#      - 8001:8001
-#    depends_on:
-#      - kafka
-#      - postgres
-#      - zookeeper
-#      - redis
-#    entrypoint: ["python", "/app/run.py", "consumer"]
+    entrypoint: ["python", "/application/run.py", "producer"]
+  consumer:
+    restart: always
+    container_name: app_consumer
+    build:
+      context: application/consumer
+      dockerfile: Dockerfile
+    volumes:
+      - ./application:/application
+    environment:
+      DOCKER : 1
+    ports:
+      - 8001:8001
+    depends_on:
+      - producer
+      - kafka
+      - postgres
+      - zookeeper
+      - redis
+    entrypoint: ["python", "/application/run.py", "consumer"]
 
   postgres:
     image: postgres:latest
@@ -71,5 +74,17 @@ services :
       - "9092:9092"
     expose:
       - 9092
-
+#  cassandra:
+#    container_name: cassandra
+#    image: cassandra:latest
+#    ports:
+#      - "7000:7000"
+#      - "9042:9042"
+#    restart: always
+#    depends_on:
+#          - producer
+#          - kafka
+#          - postgres
+#          - zookeeper
+#          - redis
 
