@@ -1,20 +1,13 @@
-import uuid
-
 from cassandra.cqlengine import columns
-from cassandra.cqlengine.management import sync_table
 from cassandra.cqlengine.models import Model
 from datetime import datetime
 
 
-class Message(Model):
-    """
-    Cassandra model message
-    """
-    __table_name__ = 'message'
-    id = columns.UUID(primary_key=True, default=uuid.uuid4)
-    date = columns.DateTime(default=datetime.utcnow())
+class Message_cs(Model):
+    _table_name = "message"
+    id = columns.UUID(primary_key=True)
     message = columns.Text(required=True)
+    sent_date = columns.Date(required=True, default=datetime.utcnow())
 
-    @classmethod
-    def create_db(cls):
-        sync_table(Message)
+
+models = (Message_cs,)

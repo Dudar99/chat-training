@@ -74,17 +74,17 @@ services :
       - "9092:9092"
     expose:
       - 9092
-#  cassandra:
-#    container_name: cassandra
-#    image: cassandra:latest
-#    ports:
-#      - "7000:7000"
-#      - "9042:9042"
-#    restart: always
-#    depends_on:
-#          - producer
-#          - kafka
-#          - postgres
-#          - zookeeper
-#          - redis
+  cassandra:
+    container_name: cassandra
+    image: cassandra:latest
+    ports:
+      - "7000:7000"
+      - "9042:9042"
+    restart: always
+    depends_on:
+          - producer
+          - kafka
+          - postgres
+          - zookeeper
+          - redis
 

@@ -1,7 +1,10 @@
+aiocassandra==2.0.1
 aiofiles==0.4.0
 aiokafka==0.4.3
 aiopg==0.15.0
 aioredis==1.2.0
+aiozk==0.10.0
+async-generator==1.10
 async-timeout==3.0.1
 cassandra-driver==3.16.0
 hiredis==0.3.1

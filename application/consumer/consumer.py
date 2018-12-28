@@ -1,7 +1,11 @@
+import uuid
+
 from aiokafka import AIOKafkaConsumer
 import asyncio
 from consumer.db_services import PGManager
-from consumer.db_services.redis_db import RedisManager
+from consumer.db_services import (RedisManager,
+                                  ZookeeperManager,
+                                  CassandraManager)
 from consumer.app import LOGGER
 
 
@@ -47,11 +51,16 @@ class Consumer:
                 LOGGER.info(f"Consumer received {cls.counter}th message, commit has been performed")
 
     @classmethod
-    async def write_messages_to_db(cls , topic, msg, offset):
+    async def write_messages_to_db(cls, topic, msg, offset):
         await RedisManager.set_value('kafka', f"{offset}")
         LOGGER.info(f"offset {offset} was inserted to redis")
+        await ZookeeperManager.set('kafka')
+        LOGGER.info(f"offset {offset} was inserted to ZK")
         await PGManager.insert_into_table(msg=msg)
         LOGGER.info("Message stored to DB")
+        await CassandraManager.insert(id=str(uuid.uuid4()), message=msg.decode('utf-8'))
+        LOGGER.info("Message stored to DB_cs")
+
 
     @classmethod
     async def commit_per_second(cls, second):
