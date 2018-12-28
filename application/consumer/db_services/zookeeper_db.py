@@ -24,7 +24,7 @@ class ZookeeperManager:
 
     @classmethod
     async def set(cls, data):
-        await ZookeeperManager.connection.set_data('offset', data.encode('utf-8'))
+        await ZookeeperManager.connection.set_data('/offset', str(data).encode('utf-8'))
 
     @classmethod
     async def get(cls):

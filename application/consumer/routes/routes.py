@@ -1,8 +1,6 @@
 from sanic.response import text, json
 
 from consumer.db_services import RedisManager, ZookeeperManager, CassandraManager
-from consumer.app import APP
-from consumer.app import LOGGER
 from consumer.db_services import PGManager
 from consumer.models import Message
 

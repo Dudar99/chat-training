@@ -35,7 +35,6 @@ class CassandraManager:
 
     @classmethod
     def create_keyspace(cls):
-        print("creating keyspace...")
         session.execute("""
                             CREATE KEYSPACE IF NOT EXISTS %s
                             WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '2' }

@@ -35,6 +35,7 @@ services :
       - postgres
       - zookeeper
       - redis
+      - cassandra
     entrypoint: ["python", "/application/run.py", "consumer"]
 
   postgres:

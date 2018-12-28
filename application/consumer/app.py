@@ -11,7 +11,7 @@ from consumer.db_services import (PGManager,
                                   ZookeeperManager)
 
 APP = Sanic(__name__)
-LOGGER = make_logger(CONSUMER_LOG_FILE_PATH)
+LOGGER = make_logger(CONSUMER_LOG_FILE_PATH,'consumer_logger')
 
 ENGINE = create_engine(
     f"postgresql://{DATABASE['DB_NAME']}:{DATABASE['POSTGRES_USER']}"

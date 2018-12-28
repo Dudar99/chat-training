@@ -2,6 +2,7 @@ import os
 import logging
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
+from config import PRODUCER_LOG_FILE_PATH
 
 def rollover_with_date(self):
     """
@@ -29,8 +30,8 @@ def rollover_with_date(self):
         self.stream = self._open()  # pylint: disable=protected-access
 
 
-def make_logger(file_path):
-    logger = logging.getLogger('main')
+def make_logger(file_path, logger_name):
+    logger = logging.getLogger(logger_name)
 
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 
@@ -40,7 +41,7 @@ def make_logger(file_path):
 
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-    file_handler = RotatingFileHandler(file_path, mode='a', maxBytes=100000000, backupCount=5)
+    file_handler = RotatingFileHandler(file_path, mode='a', maxBytes=10000000, backupCount=5)
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(formatter)
 
@@ -48,5 +49,5 @@ def make_logger(file_path):
     logger.addHandler(file_handler)
     logger.setLevel(logging.INFO)
 
-
     return logger
+

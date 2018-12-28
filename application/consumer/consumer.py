@@ -54,7 +54,7 @@ class Consumer:
     async def write_messages_to_db(cls, topic, msg, offset):
         await RedisManager.set_value('kafka', f"{offset}")
         LOGGER.info(f"offset {offset} was inserted to redis")
-        await ZookeeperManager.set('kafka')
+        await ZookeeperManager.set(offset)
         LOGGER.info(f"offset {offset} was inserted to ZK")
         await PGManager.insert_into_table(msg=msg)
         LOGGER.info("Message stored to DB")
