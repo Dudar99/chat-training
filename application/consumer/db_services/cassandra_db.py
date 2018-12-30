@@ -1,14 +1,11 @@
 import asyncio
-import uuid
 from cassandra.cqlengine.management import sync_table
 
-from consumer.models import models
-from cassandra.cluster import Cluster
+from consumer.models import models_cs
 from cassandra.cqlengine import connection
+from consumer.app import LOGGER, Configs
+from consumer.app import SESSION
 
-cluster = Cluster(["cassandra"])
-
-session = cluster.connect()
 
 
 class CassandraManager:
@@ -21,32 +18,30 @@ class CassandraManager:
     async def _init_tables(cls):
         while True:
             try:
-                cls.connection = await connection.setup(hosts=["cassandra"], default_keyspace="chat_1")
+                cls.connection = await connection.setup(hosts=[Configs['CASSANDRA_HOST']], default_keyspace="chat_1")
+                LOGGER.info("Connected with Cassandra")
                 break
             except Exception as e:
-                print(f"try to reconect to cassandra{e}")
+                LOGGER.error(f"Cassandra: {e}\n :try to reconnect in 4 second...")
                 await asyncio.sleep(4)
-        async for model in models:
+        async for model in models_cs:
             try:
                 await sync_table(model)
-                print(f"Table {model.info} was created")
+                LOGGER.info(f"Table {model.info} was created")
             except Exception as e:
-                print("Cassandra cant create this tabvle already exist")
+                LOGGER.error(f"Table { model.info} already exist")
 
     @classmethod
     def create_keyspace(cls):
-        session.execute("""
+        SESSION.execute("""
                             CREATE KEYSPACE IF NOT EXISTS %s
                             WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '2' }
                             """ % 'chat_1')
 
     @classmethod
     def create(cls):
-        print("setting keyspace...")
-        session = cluster.connect()
-        session.set_keyspace('chat_1')
-        print("creating table...")
-        session.execute("""
+        LOGGER.info("Key space setting and creating table")
+        SESSION.execute("""
                             CREATE TABLE IF NOT EXISTS messages (
                                 id text,
                                 message text,
@@ -56,16 +51,14 @@ class CassandraManager:
 
     @classmethod
     async def insert(cls, id, message):
-        session.set_keyspace('chat_1')
         try:
-            session.execute_async("INSERT INTO messages (id, message) VALUES (%s, %s)",
+            SESSION.execute_async("INSERT INTO messages (id, message) VALUES (%s, %s)",
                                   (id, message)).result()
+            LOGGER.info(f"Message {message} was inserted into table Message")
         except Exception as e:
-            print(e)
+            LOGGER.error(f"{e}")
 
     @classmethod
     async def select_count(cls):
-        session.set_keyspace('chat_1')
-        res = session.execute_async("SELECT COUNT(*)  FROM messages").result()
-
+        res = SESSION.execute_async("SELECT COUNT(*)  FROM messages").result()
         return res[0][0]

@@ -1,22 +1,27 @@
-version : '3'
+version: '3'
 
-services :
+services:
   producer:
     restart: always
+
     container_name: app_producer
     build:
       context: application/producer
       dockerfile: Dockerfile
     volumes:
-      - ./application:/application
+    - ./application:/application
     ports:
-      - 5000:5000
+    - 5000:5000
+    environment:
+      DOCKER: 1
+
     depends_on:
-      - kafka
-      - postgres
-      - zookeeper
-      - redis
+    - kafka
+    - postgres
+    - zookeeper
+    - redis
     entrypoint: ["python", "/application/run.py", "producer"]
+
   consumer:
     restart: always
     container_name: app_consumer
@@ -24,68 +29,80 @@ services :
       context: application/consumer
       dockerfile: Dockerfile
     volumes:
-      - ./application:/application
+    - ./application:/application
     environment:
-      DOCKER : 1
+      DOCKER: 1
+      DATA_STORAGE: POSTGRES
+      OFFSET_STORAGE: REDIS
     ports:
-      - 5001:5001
+    - 5001:5001
     depends_on:
-      - producer
-      - kafka
-      - postgres
-      - zookeeper
-      - redis
-      - cassandra
+    - producer
+    - kafka
+    - postgres
+    - zookeeper
+    - redis
+    - cassandra
     entrypoint: ["python", "/application/run.py", "consumer"]
+
+
 
   postgres:
     image: postgres:latest
     container_name: postgres
     volumes:
-      - /var/lib/postgres
+    - /var/lib/postgres
     environment:
-      POSTGRES_DB: project
+      POSTGRES_DATABASE: project
       POSTGRES_USER: project
       POSTGRES_PASSWORD: project
+      POSTGRES_ADDRESS: project
     ports:
-      - "5432:5432"
+    - "5432:5432"
   redis:
     image: redis
     container_name: redis
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6378
     volumes:
-      - ./redis:/var/lib/redis/data
+    - ./redis:/var/lib/redis/data
     ports:
-      - 6378:6378
+    - 6378:6378
 
 
   zookeeper:
-      image: zookeeper:latest
-      container_name: zookeeper
-      ports:
-        - "2181:2181"
+    image: zookeeper:latest
+    container_name: zookeeper
+    ports:
+    - "2181:2181"
+    environment:
+      ZOOKEEPER_PORT: 2181
+      ZOOKEEPER_HOST: zookeeper
   kafka:
     restart: always
     image: wurstmeister/kafka:0.10.2.0
     container_name: kafka
     environment:
-      KAFKA_ADVERTISED_HOST_NAME : kafka
-      KAFKA_ZOOKEEPER_CONNECT : "zookeeper:2181"
-      KAFKA_ADVERTISED_PORT : 9092
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_ADVERTISED_PORT: 9092
     ports:
-      - "9092:9092"
+    - "9092:9092"
     expose:
-      - 9092
+    - 9092
   cassandra:
     container_name: cassandra
     image: cassandra:latest
     ports:
-      - "7000:7000"
-      - "9042:9042"
+    - "7000:7000"
+    - "9042:9042"
     restart: always
     depends_on:
-          - producer
-          - kafka
-          - postgres
-          - zookeeper
-          - redis
-
+    - producer
+    - kafka
+    - postgres
+    - zookeeper
+    - redis
+    environment:
+      CASSANDRA_HOST: cassandra

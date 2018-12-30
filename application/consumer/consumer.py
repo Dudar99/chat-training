@@ -2,11 +2,8 @@ import uuid
 
 from aiokafka import AIOKafkaConsumer
 import asyncio
-from consumer.db_services import PGManager
-from consumer.db_services import (RedisManager,
-                                  ZookeeperManager,
-                                  CassandraManager)
 from consumer.app import LOGGER
+from consumer.config import Configs
 
 
 class Consumer:
@@ -52,15 +49,20 @@ class Consumer:
 
     @classmethod
     async def write_messages_to_db(cls, topic, msg, offset):
-        await RedisManager.set_value('kafka', f"{offset}")
-        LOGGER.info(f"offset {offset} was inserted to redis")
-        await ZookeeperManager.set(offset)
-        LOGGER.info(f"offset {offset} was inserted to ZK")
-        await PGManager.insert_into_table(msg=msg)
+        if Configs['DATA_STORAGE'] == 'POSTGRES':
+            from consumer.db_services import PGManager
+            await PGManager.insert_into_table(msg=msg)
+        else:
+            from consumer.db_services import CassandraManager
+            await CassandraManager.insert(id=str(uuid.uuid4()), message=msg.decode('utf-8'))
         LOGGER.info("Message stored to DB")
-        await CassandraManager.insert(id=str(uuid.uuid4()), message=msg.decode('utf-8'))
-        LOGGER.info("Message stored to DB_cs")
-
+        if Configs['OFFSET_STORAGE'] == 'REDIS':
+            from consumer.db_services import RedisManager
+            await RedisManager.set_value('kafka', f"{offset}")
+        else:
+            from consumer.db_services import ZookeeperManager
+            await ZookeeperManager.set(offset)
+        LOGGER.info(f"offset {offset} was saved")
 
     @classmethod
     async def commit_per_second(cls, second):

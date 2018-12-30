@@ -1,19 +1,18 @@
 from aiopg.sa import create_engine
-from config import DATABASE
-from consumer.models import models
+from consumer.config import Configs
+from consumer.models import models_pg
 # from consumer.app import LOGGER
 from consumer.models import Message
-
 
 class PGManager:
 
     @classmethod
     async def create_engine(cls):
         return await create_engine(
-            user=DATABASE['POSTGRES_USER'],
-            database=DATABASE['DB_NAME'],
-            host=DATABASE['HOST'],
-            password=DATABASE['POSTGRES_PASSWORD']
+            user=Configs['POSTGRES_USER'],
+            database=Configs['POSTGRES_DATABASE'],
+            host=Configs['POSTGRES_ADDRESS'],
+            password=Configs['POSTGRES_PASSWORD']
         )
 
     @classmethod
@@ -21,12 +20,10 @@ class PGManager:
         from sqlalchemy.sql.ddl import CreateTable
         engine = await cls.create_engine()
         async with engine.acquire() as conn:
-            for model in models:
+            for model in models_pg:
                 try:
                     await conn.execute(CreateTable(model))
-                    # LOGGER.info(f'Table {model.name} was created')
                 except Exception as e:
-                    # LOGGER.info(f'Error occured when creating {model.name}: {e}')
                     continue
 
     @classmethod

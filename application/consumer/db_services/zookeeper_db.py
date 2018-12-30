@@ -1,5 +1,6 @@
 import aiozk
 import asyncio
+from consumer.app import LOGGER, Configs
 
 
 class ZookeeperManager:
@@ -10,17 +11,20 @@ class ZookeeperManager:
 
     @classmethod
     async def connect(cls):
-        ZookeeperManager.connection = aiozk.ZKClient('zookeeper:2181', loop=asyncio.get_event_loop())
+        ZookeeperManager.connection = aiozk.ZKClient(f"{Configs['ZOOKEEPER_HOST']}:{Configs['ZOOKEEPER_PORT']}",
+                                                     loop=asyncio.get_event_loop())
         await ZookeeperManager.connection.start()
         try:
             await ZookeeperManager.connection.ensure_path('/offset')
+            LOGGER.info("Connection with zookeeper established")
         except Exception as e:
-            print('Problem with  path for ZK')
+            LOGGER.error('Problem with  path for ZK')
             await ZookeeperManager.connection.create('/offset', data=b'null', ephemeral=True)
 
     @classmethod
     async def close(cls):
         await ZookeeperManager.connection.close()
+        LOGGER.info("Connection with zookeeper closed")
 
     @classmethod
     async def set(cls, data):

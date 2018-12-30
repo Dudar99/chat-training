@@ -1,5 +1,5 @@
 from sanic import Sanic
-from config import PRODUCER_LOG_FILE_PATH
+from producer.config import PRODUCER_LOG_FILE_PATH
 from logger_conf import make_logger
 import asyncio
 
@@ -12,4 +12,3 @@ from producer.routes import add_routes
 
 add_routes(APP)
 
-LOGGER.info("OK Google")

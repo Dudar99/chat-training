@@ -10,5 +10,6 @@ Message = sa.Table('Message', metadata,
                    sa.Column('id', sa.Integer, autoincrement=True, primary_key=True),
                    sa.Column('message', sa.String(255)),
                    sa.Column('created_date', sa.Date, default=datetime.utcnow()))
-models = (Message,)
-__all__ = [models, Message]
+models_pg = [Message,]
+
+__all__ = [models_pg, Message]

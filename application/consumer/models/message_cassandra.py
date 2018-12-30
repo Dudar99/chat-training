@@ -10,4 +10,4 @@ class Message_cs(Model):
     sent_date = columns.Date(required=True, default=datetime.utcnow())
 
 
-models = (Message_cs,)
+models_cs = (Message_cs,)

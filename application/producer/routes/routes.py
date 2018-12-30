@@ -12,7 +12,7 @@ async def send_message(request):
             producer = Producer()
             break
         except NoBrokersAvailable:
-            time.sleep(0.5)
+            time.sleep(5)
 
     message_data = request.form.get('message')
 

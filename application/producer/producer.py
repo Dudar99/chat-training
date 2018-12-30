@@ -15,8 +15,7 @@ class Producer():
             LOGGER.info(f"Message {message} was sent")
             try:
                 future.get(timeout=1)
-            except KafkaError:
-                # Decide what to do if produce request failed...
-                print(KafkaError.args)
+            except KafkaError as err:
+                LOGGER.error(f"{err}")
                 pass
             self.producer.flush()

@@ -2,7 +2,7 @@ import os
 import logging
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
-from config import PRODUCER_LOG_FILE_PATH
+
 
 def rollover_with_date(self):
     """
