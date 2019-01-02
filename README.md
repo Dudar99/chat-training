@@ -1,7 +1,7 @@
 # Chat-training
 
-This application allow you to send and recieve messages using kafka brokers 
-Also messages store to databases (Postgres or Cassandra)
+This application allow you to send and recieve messages using kafka brokers.
+Messages  store to databases (Postgres or Cassandra)
 
 ## Getting Started
 

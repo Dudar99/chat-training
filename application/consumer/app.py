@@ -4,7 +4,7 @@ Module for creating sanic app
 from sanic import Sanic
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from consumer.config import CONSUMER_LOG_FILE_PATH, Configs
+from consumer.config import CONSUMER_LOG_FILE_PATH
 import redis
 from consumer.config import Configs
 from logger_conf import make_logger
