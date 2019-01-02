@@ -1,6 +1,9 @@
+"""
+Module for running producer and consumer applications
+"""
+from sys import argv
 from producer.app import APP as producer_app
 from consumer.app import APP as consumer_app
-from sys import argv
 
 
 if __name__ == '__main__':

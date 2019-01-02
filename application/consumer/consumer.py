@@ -1,3 +1,6 @@
+"""
+Module for consumer class description
+"""
 import uuid
 
 from aiokafka import AIOKafkaConsumer
@@ -7,14 +10,23 @@ from consumer.config import Configs
 
 
 class Consumer:
+    """
+    Consumer listener, that will listen to producer
+    """
     consumer: AIOKafkaConsumer = None
     counter: int = 0
 
     @classmethod
     async def __init(cls, second_commit, item_commit):
+        """
+        Initialize AIOKafka consumer instance and
+        :param second_commit: will commit messages every <second_commit>
+        :param item_commit: will commit messages when every <item_commit>th message appear
+        :return:
+        """
         cls.consumer = AIOKafkaConsumer('my-topic',
                                         group_id="chat_1",
-                                        bootstrap_servers=["kafka:9092"],
+                                        bootstrap_servers=[f"{Configs['KAFKA_ADDRESS']}:{Configs['KAFKA_PORT']}"],
                                         loop=asyncio.get_event_loop(),
                                         enable_auto_commit=False,
                                         consumer_timeout_ms=3000
@@ -34,7 +46,11 @@ class Consumer:
 
     @classmethod
     async def _listen(cls):
-
+        """
+        Initialize consumer connection with second and item commit config.
+        When any message appears in connection it will be stored to DB
+        :return:
+        """
         await cls.__init(second_commit=10, item_commit=3)
         async for msg in cls.consumer:
             cls.counter += 1
@@ -42,13 +58,16 @@ class Consumer:
                         f" key:{msg.key}  value:{msg.value} ")
 
             await cls.write_messages_to_db('mt-topic', msg=msg.value, offset=msg.offset)
-            if cls.counter > 10:
-                await cls.consumer.commit()
-                cls.counter = 0
-                LOGGER.info(f"Consumer received {cls.counter}th message, commit has been performed")
 
     @classmethod
     async def write_messages_to_db(cls, topic, msg, offset):
+        """
+        Store message and offset to DB according to config.
+        :param topic:
+        :param msg: string
+        :param offset: string
+        :return: None
+        """
         if Configs['DATA_STORAGE'] == 'POSTGRES':
             from consumer.db_services import PGManager
             await PGManager.insert_into_table(msg=msg)
@@ -66,6 +85,11 @@ class Consumer:
 
     @classmethod
     async def commit_per_second(cls, second):
+        '''
+        Commit messages every <second>
+        :param second:
+        :return:
+        '''
         while True:
             await asyncio.sleep(second)
             cls.consumer.commit()
@@ -74,6 +98,11 @@ class Consumer:
 
     @classmethod
     async def commit_per_item(cls, count):
+        '''
+        Commit messages every <count>th message appear
+        :param count: count of messages to do commit
+        :return: None
+        '''
         while True:
             if cls.counter >= count:
                 cls.consumer.commit()

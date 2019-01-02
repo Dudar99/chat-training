@@ -1,3 +1,6 @@
+"""
+Module for logger configuration
+"""
 import os
 import logging
 from datetime import datetime
@@ -31,6 +34,12 @@ def rollover_with_date(self):
 
 
 def make_logger(file_path, logger_name):
+    """
+    Function that return logger instance with all configuration we want
+    :param file_path: log messages storage file
+    :param logger_name: logger name
+    :return: logger
+    """
     logger = logging.getLogger(logger_name)
 
     formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')

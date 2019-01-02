@@ -1,3 +1,6 @@
+"""
+Module for creating sanic app
+"""
 from sanic import Sanic
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -26,5 +29,4 @@ SESSION.set_keyspace('chat_1')
 
 
 from consumer.routes import add_routes
-
 add_routes(APP)

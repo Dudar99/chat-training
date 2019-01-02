@@ -1,3 +1,6 @@
+"""
+Module for Cassandra database manager
+"""
 import asyncio
 from cassandra.cqlengine.management import sync_table
 
@@ -16,6 +19,10 @@ class CassandraManager:
 
     @classmethod
     async def _init_tables(cls):
+        """
+        Method that create all tables from cassandra models
+        :return: None
+        """
         while True:
             try:
                 cls.connection = await connection.setup(hosts=[Configs['CASSANDRA_HOST']], default_keyspace="chat_1")
@@ -23,7 +30,7 @@ class CassandraManager:
                 break
             except Exception as e:
                 LOGGER.error(f"Cassandra: {e}\n :try to reconnect in 4 second...")
-                await asyncio.sleep(4)
+                await asyncio.sleep(20)
         async for model in models_cs:
             try:
                 await sync_table(model)
@@ -33,6 +40,10 @@ class CassandraManager:
 
     @classmethod
     def create_keyspace(cls):
+        """
+        Method which create key space if it does not exist
+        :return:
+        """
         SESSION.execute("""
                             CREATE KEYSPACE IF NOT EXISTS %s
                             WITH replication = { 'class': 'SimpleStrategy', 'replication_factor': '2' }
@@ -40,6 +51,10 @@ class CassandraManager:
 
     @classmethod
     def create(cls):
+        """
+        Method which allow to create table
+        :return:
+        """
         LOGGER.info("Key space setting and creating table")
         SESSION.execute("""
                             CREATE TABLE IF NOT EXISTS messages (
@@ -51,6 +66,12 @@ class CassandraManager:
 
     @classmethod
     async def insert(cls, id, message):
+        """
+        With this method you can insert data into cassandra table
+        :param id:
+        :param message:
+        :return:
+        """
         try:
             SESSION.execute_async("INSERT INTO messages (id, message) VALUES (%s, %s)",
                                   (id, message)).result()
@@ -60,5 +81,8 @@ class CassandraManager:
 
     @classmethod
     async def select_count(cls):
+        """
+        :return: count of rof in Message table
+        """
         res = SESSION.execute_async("SELECT COUNT(*)  FROM messages").result()
         return res[0][0]

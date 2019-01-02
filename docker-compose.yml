@@ -34,6 +34,8 @@ services:
       DOCKER: 1
       DATA_STORAGE: POSTGRES
       OFFSET_STORAGE: REDIS
+      KAFKA_SERVERS: kafka
+      KAFKA_PORT : 9092
     ports:
     - 5001:5001
     depends_on:

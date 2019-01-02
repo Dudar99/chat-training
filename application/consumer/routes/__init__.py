@@ -1,3 +1,6 @@
+'''
+Module for router __init__
+'''
 from .routes import add_routes
 from consumer.app import APP
 
@@ -10,6 +13,12 @@ from consumer.app import LOGGER, Configs
 
 @APP.listener('before_server_start')
 async def setup(app, loop):
+    '''
+
+    :param app: application
+    :param loop: loop of events
+    :return:
+    '''
     if Configs['DATA_STORAGE'] == 'POSTGRES':
         try:
             await PGManager.init_tables()
