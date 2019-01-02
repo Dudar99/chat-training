@@ -4,14 +4,15 @@ Module for Postgres database manager
 from aiopg.sa import create_engine
 from consumer.config import Configs
 from consumer.models import models_pg
-# from consumer.app import LOGGER
+from consumer.app import LOGGER
 from consumer.models import Message
 
-
+LOGGER.error("gfgf")
 class PGManager:
     '''
     Class that manage data in Postgres
     '''
+
     @classmethod
     async def create_engine(cls):
         '''

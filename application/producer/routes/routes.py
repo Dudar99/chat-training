@@ -16,7 +16,7 @@ async def send_message(request):
 
     message_data = request.form.get('message')
 
-    producer.send_messages('my-topic', message_data)
+    await producer.send_one({'message': message_data})
     return redirect('/')
 
 

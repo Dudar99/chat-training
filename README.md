@@ -27,6 +27,13 @@ Then docker will run all containers
 Wait until consumer app give you message like this :"connection with Kafka broker successfully established"
 
 
+## Endpoints
+```
+send message - http://127.0.0.1:5000/
+check rowcount - http://127.0.0.1:5001/count
+check offset - http://127.0.0.1:5001/offset
+```
+
 ## Running the tests
 
 TODO

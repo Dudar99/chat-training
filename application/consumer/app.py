@@ -25,7 +25,7 @@ CS_KEY_SPACE = 'chat'
 
 CLASTER = Cluster([Configs['CASSANDRA_HOST']])
 SESSION = CLASTER.connect()
-SESSION.set_keyspace('chat_1')
+# SESSION.set_keyspace('chat_1')
 
 
 from consumer.routes import add_routes
